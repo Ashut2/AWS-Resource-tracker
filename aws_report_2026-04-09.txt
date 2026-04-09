@@ -1,0 +1,23 @@
+========= AWS Resource Report - Thu Apr  9 18:51:02 IST 2026 ========
+
++++++++ S3 Buckets +++++++
+2026-03-26 16:16:19 clitest-s3
+
+++++++ EC2 Instances in ap-southeast-2 region ++++++
+i-034ea20f63781e3f0 test
+
+++++++ Lambda Functions ++++++
+
++++++++ IAM Users ++++++++
+{
+    "Users": [
+        {
+            "Path": "/",
+            "UserName": "ashu66-tem",
+            "UserId": "AIDA6HZSCUD7LQ5LMS25K",
+            "Arn": "arn:aws:iam::978820702462:user/ashu66-tem",
+            "CreateDate": "2026-03-26T10:37:55+00:00"
+        }
+    ]
+}
+========= Report Complete ========

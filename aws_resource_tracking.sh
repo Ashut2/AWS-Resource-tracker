@@ -1,50 +1,38 @@
 #!/bin/bash
-
 ################################
-
 # Author : Ashutosh Shukla
 # Date : 06 April
-
-# Version : v1
-
+# Version : v2
 # This Script reports back the usage of AWS Resources usage.
-
 ################################
+set -x  # debug mode
+# set -e  # exit on error
 
-# Resource this script going to track : EC2 , S3 , Lambda Function , IAM 
+# Output file - saves in current user's home directory
+REPORT="$(dirname "$0")/aws_report_$(date +%Y-%m-%d).txt" # This saves the report file right next to where this script lives 
 
-set -x # debug mode
-
-set -e # to show error
-
-
-# Output file - creates automatically if it doesn't exist
-
-REPORT="/home/ubuntu/aws_report_$(date +%Y-%m-%d).txt"
-echo "========= AWS Resource Report - $(date) ======== " >> "$REPORT"
+echo "========= AWS Resource Report - $(date) ========" > "$REPORT"
 
 # List S3 buckets
-echo "+++++++ s3 Buckets ++++++" >> "$REPORT"
-
-aws s3 ls
-
-# Note: For any reference of AWS CLI command , We can refer to AWS CLI command Documentation.
+echo "" >> "$REPORT"
+echo "+++++++ S3 Buckets +++++++" >> "$REPORT"
+aws s3 ls >> "$REPORT"
 
 # List EC2 Instances
-echo "++++++ ec2 Instances in ap-southeast-2 region ++++++" >> "$REPORT"
+echo "" >> "$REPORT"
+echo "++++++ EC2 Instances in ap-southeast-2 region ++++++" >> "$REPORT"
+aws ec2 describe-instances --region ap-southeast-2 \
+  | jq -r '.Reservations[].Instances[] | "\(.InstanceId) \(.Tags[]|select(.Key=="Name").Value)"' >> "$REPORT" # Handles json output well
 
-aws ec2 describe-instances --region ap-southeast-2 | jq -r '.Reservations[].Instances[] | "\(.InstanceId) \(.Tags[]|select(.Key=="Name").Value)"' # InstanceID Name-of-instance
-
-# check your instance region and replace it ^ 
-
-# List Lambda functions 
-echo "++++++ Lambda functions +++++++" >> "$REPORT"
-
-aws lambda list-functions
+# List Lambda functions
+echo "" >> "$REPORT"
+echo "++++++ Lambda Functions ++++++" >> "$REPORT"
+aws lambda list-functions --region ap-southeast-2 >> "$REPORT"   # User have not the listed permission in the policy , so this might fail.
 
 # List IAM Users
+echo "" >> "$REPORT"
 echo "+++++++ IAM Users ++++++++" >> "$REPORT"
+aws iam list-users >> "$REPORT"
 
-aws iam list-users
-
-echo "Report saved to $REPORT file" 
+echo "========= Report Complete ========" >> "$REPORT"
+echo "✅ Report saved to $REPORT"
